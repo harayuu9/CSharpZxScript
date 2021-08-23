@@ -1,3 +1,6 @@
+NOT YET
+===
+
 SCharpZxScript
 ===
 
@@ -5,8 +8,11 @@ SCharpZxScript
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 ## Table of Contents
 
-- [Getting Started](#getting-started)
-- [ProcessX](#processx)
+- [NOT YET](#not-yet)
+- [SCharpZxScript](#scharpzxscript)
+  - [Table of Contents](#table-of-contents)
+  - [Getting Started](#getting-started)
+  - [ProcessX](#processx)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
