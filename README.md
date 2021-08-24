@@ -9,7 +9,12 @@ You can easily write CSharpScript using the Zx function of [ProcessX](https://gi
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 ## Table of Contents
 
-- [Getting Started](#getting-started)
+  - [Getting Started](#getting-started)
+  - [Edit Script](#edit-script)
+- [Settings](#settings)
+  - [Use NuGet Package](#use-nuget-package)
+  - [Use Reference Project](#use-reference-project)
+  - [Use Reference CS](#use-reference-cs)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
