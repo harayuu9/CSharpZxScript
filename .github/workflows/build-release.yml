@@ -3,7 +3,7 @@ name: Build-Release
 on:
   push:
     tags:
-      - 'v*'
+      - '*'
 
 env:
   GIT_TAG: ${{ github.event.inputs.tag }}
