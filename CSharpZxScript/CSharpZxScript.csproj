@@ -14,8 +14,9 @@
     <Nullable>enable</Nullable>
     <ApplicationIcon>icon.ico</ApplicationIcon>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <RepositoryUrl>https://github.com/harayuu9/CSharpZxScript</RepositoryUrl>
-    <RepositoryType>github</RepositoryType>
+    <PackageProjectUrl>https://github.com/harayuu9/CSharpZxScript</PackageProjectUrl>
+    <RepositoryUrl>$(PackageProjectUrl)</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
     <Copyright>Yuto Harada</Copyright>
     <Description>Support for launching ZxC# like a script</Description>
     <PackageIcon>icon.png</PackageIcon>
@@ -38,6 +39,7 @@
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
+    <None Include="..\README.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
 
 </Project>
