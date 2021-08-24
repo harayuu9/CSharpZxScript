@@ -7,20 +7,30 @@ using Zx;
 
 namespace CSharpZxScript
 {
-    public static class ScriptRunner
+    public class ScriptRunner
     {
         private const string ProjectName = "Run";
-        private static string SlnPath => Path.Combine(GetWorkPath(), ProjectName + ".sln");
-        private static string CsProjPath => Path.Combine(GetWorkPath(), ProjectName + ".csproj");
+        private string SlnPath => Path.Combine(GetProjectPath(), ProjectName + ".sln");
+        private string CsProjPath => Path.Combine(GetProjectPath(), ProjectName + ".csproj");
+        private readonly string _filePath;
 
-        private static string GetWorkPath()
+        public ScriptRunner(string filePath)
         {
-            return Path.Combine(ExePathUtil.AssemblyDir, "work");
+            _filePath = Path.GetFullPath(filePath);
         }
 
-        private static async Task CreateProject(string filePath, string targetFrameWork, string processXVersion)
+        private string GetProjectPath()
         {
-            var workPath = GetWorkPath();
+            var work = Path.Combine(ExePathUtil.AssemblyDir, "work");
+            Directory.CreateDirectory(work);
+            var project = Path.Combine(work, Path.GetFileNameWithoutExtension(_filePath));
+            Directory.CreateDirectory(project);
+            return project;
+        }
+
+        private async Task CreateProject(string targetFrameWork, string processXVersion)
+        {
+            var workPath = GetProjectPath();
             Directory.CreateDirectory(workPath);
 
             // Load All Settings
@@ -28,7 +38,7 @@ namespace CSharpZxScript
             var packageRef = new StringBuilder();
             var projectRef = new StringBuilder();
             var csRef = new StringBuilder();
-            var rootSettings = Settings.GetRootSettings(Path.GetDirectoryName(filePath) ??
+            var rootSettings = Settings.GetRootSettings(Path.GetDirectoryName(_filePath) ??
                                      throw new InvalidOperationException("Could not get the directory from the file path"));
             if (rootSettings != null)
             {
@@ -70,7 +80,7 @@ EndProject
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include=""{Path.GetFullPath(filePath)}""/>
+    <Compile Include=""{_filePath}""/>
 {csRef}
   </ItemGroup>
 
@@ -87,9 +97,9 @@ EndProject
             await File.WriteAllTextAsync(CsProjPath, csproj);
         }
 
-        private static async Task CreateVsLaunchSettings(string currentDir)
+        private async Task CreateVsLaunchSettings(string currentDir)
         {
-            var propertiesPath = Path.Combine(GetWorkPath(), "Properties");
+            var propertiesPath = Path.Combine(GetProjectPath(), "Properties");
             Directory.CreateDirectory(propertiesPath);
 
             var launchSettings = $@"
@@ -105,32 +115,30 @@ EndProject
             await File.WriteAllTextAsync(Path.Combine(propertiesPath, "launchSettings.json"), launchSettings);
         }
 
-        public static async Task CreateEnv(string filePath, string targetFrameWork, string processXVersion)
+        public async Task CreateEnv(string targetFrameWork, string processXVersion)
         {
-            var fileFullPath = Path.GetFullPath(filePath);
-
-            if (!File.Exists(fileFullPath))
+            if (!File.Exists(_filePath))
             {
-                await File.WriteAllTextAsync(fileFullPath, "using Zx;\nusing static Zx.Env;\n\nawait $\"echo {\"Hello World\"}\";");
+                await File.WriteAllTextAsync(_filePath, "using Zx;\nusing static Zx.Env;\n\nawait $\"echo {\"Hello World\"}\";");
             }
-            await CreateProject(fileFullPath, targetFrameWork, processXVersion);
+            await CreateProject(targetFrameWork, processXVersion);
 
             // Set Current Directory
-            var cd = Path.GetDirectoryName(fileFullPath) ?? throw new InvalidOperationException($"Current directory is null {fileFullPath}");
+            var cd = Path.GetDirectoryName(_filePath) ?? throw new InvalidOperationException($"Current directory is null {_filePath}");
             Environment.CurrentDirectory = cd;
             // Visual Studio Settings
             await CreateVsLaunchSettings(cd);
             // TODO Support Other IDE
         }
 
-        public static async Task<int> Run(string filePath)
+        public async Task<int> Run()
         {
-            var workPath = GetWorkPath();
+            var workPath = GetProjectPath();
             var exePath = Path.Combine(workPath, "bin");
             var oldCsPath = Path.Combine(exePath, "old.cs");
 
             var needBuild = true;
-            var newFile = await File.ReadAllTextAsync(filePath);
+            var newFile = await File.ReadAllTextAsync(_filePath);
             if (File.Exists(oldCsPath))
             {
                 var oldFile = await File.ReadAllTextAsync(oldCsPath);
@@ -174,7 +182,7 @@ EndProject
             return 0;
         }
 
-        public static void Edit()
+        public void Edit()
         {
             Env.run($"{SlnPath}");
         }

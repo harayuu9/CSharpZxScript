@@ -24,8 +24,9 @@ namespace CSharpZxScript
             [Option("sr")] bool stopError = false
         )
         {
-            await ScriptRunner.CreateEnv(filename, targetFrameWork, processXVersion);
-            var result = await ScriptRunner.Run(filename);
+            var runner = new ScriptRunner(filename);
+            await runner.CreateEnv(targetFrameWork, processXVersion);
+            var result = await runner.Run();
 
             if (result != 0 && stopError)
             {
@@ -42,8 +43,9 @@ namespace CSharpZxScript
             [Option("xv", "https://github.com/Cysharp/ProcessX")] string processXVersion = "1.4.5"
         )
         {
-            await ScriptRunner.CreateEnv(filename, targetFrameWork, processXVersion);
-            ScriptRunner.Edit();
+            var runner = new ScriptRunner(filename);
+            await runner.CreateEnv(targetFrameWork, processXVersion);
+            runner.Edit();
         }
         #endregion
 
