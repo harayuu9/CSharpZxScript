@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using ConsoleAppFramework;
 using Microsoft.Extensions.Hosting;
@@ -14,6 +15,7 @@ namespace CSharpZxScript
             await Host.CreateDefaultBuilder().RunConsoleAppFrameworkAsync<Program>(args);
         }
 
+        #region Script
         [Command(new[] { "Run", "r" })]
         public async Task<int> Run(
             [Option(0, "filename:script.cs")] string filename,
@@ -43,7 +45,9 @@ namespace CSharpZxScript
             await ScriptRunner.CreateEnv(filename, targetFrameWork, processXVersion);
             ScriptRunner.Edit();
         }
+        #endregion
 
+        #region Settings 
         [Command(new[] { "SettingsList", "sl" })]
         public void SettingsList(
             [Option("sd")] string settingDirectory = ".")
@@ -161,5 +165,62 @@ namespace CSharpZxScript
             settings.CsRefList.Remove(find);
             settings.SaveCurrentSettings(settingDirectory);
         }
+        #endregion
+
+        #region Registry
+
+        [Command(new[] { "AddRightClickMenu", "arc" }, "Add Run ZxScript and Edit ZxScript to the right-click menu of .cs")]
+        public void AddRightClickMenu()
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                using var shellRegKey = Microsoft.Win32.Registry.CurrentUser.CreateSubKey("Software\\Classes\\SystemFileAssociations\\.cs\\shell");
+
+                using var zxScriptRunRegKey = shellRegKey.CreateSubKey("ZxScriptRun");
+                zxScriptRunRegKey.SetValue("", "Run ZxScript");
+                zxScriptRunRegKey.SetValue("icon", AssemblyUtil.AssemblyPath);
+                using var zxScriptRunCommandRegKey = zxScriptRunRegKey.CreateSubKey("command");
+                zxScriptRunCommandRegKey.SetValue("", $"\"{AssemblyUtil.AssemblyPath}\" r %1 -sr true");
+
+                using var zxScriptEditRegKey = shellRegKey.CreateSubKey("ZxScriptEdit");
+                zxScriptEditRegKey.SetValue("", "Edit ZxScript");
+                zxScriptEditRegKey.SetValue("icon", AssemblyUtil.AssemblyPath);
+                using var zxScriptEditCommandRegKey = zxScriptEditRegKey.CreateSubKey("command");
+                zxScriptEditCommandRegKey.SetValue("", $"\"{AssemblyUtil.AssemblyPath}\" e %1");
+
+                Console.WriteLine("Finish Add Menu");
+            }
+            else
+            {
+                throw new ArgumentException("AddRightClickMenu is for Windows only");
+            }
+        }
+
+        [Command(new[] { "RemoveRightClickMenu", "rrc" }, "Remove right-click menu")]
+        public void RemoveRightClickMenu()
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                var shellRegKey = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("Software\\Classes\\SystemFileAssociations\\.cs\\shell", true);
+                if (shellRegKey == null)
+                {
+                    Console.WriteLine("Shell Key is not found");
+                    return;
+                }
+
+                using (shellRegKey)
+                {
+                    shellRegKey.DeleteSubKeyTree("ZxScriptRun");
+                    shellRegKey.DeleteSubKeyTree("ZxScriptEdit");
+                }
+                Console.WriteLine("Finish Remove Menu");
+            }
+            else
+            {
+                throw new ArgumentException("RemoveRightClickMenu is for Windows only");
+            }
+        }
+
+        #endregion
     }
 }
