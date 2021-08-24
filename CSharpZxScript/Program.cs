@@ -178,15 +178,15 @@ namespace CSharpZxScript
 
                 using var zxScriptRunRegKey = shellRegKey.CreateSubKey("ZxScriptRun");
                 zxScriptRunRegKey.SetValue("", "Run ZxScript");
-                zxScriptRunRegKey.SetValue("icon", AssemblyUtil.AssemblyPath);
+                zxScriptRunRegKey.SetValue("icon", ExePathUtil.ExePath);
                 using var zxScriptRunCommandRegKey = zxScriptRunRegKey.CreateSubKey("command");
-                zxScriptRunCommandRegKey.SetValue("", $"\"{AssemblyUtil.AssemblyPath}\" r %1 -sr true");
+                zxScriptRunCommandRegKey.SetValue("", $"\"{ExePathUtil.ExePath}\" r %1 -sr true");
 
                 using var zxScriptEditRegKey = shellRegKey.CreateSubKey("ZxScriptEdit");
                 zxScriptEditRegKey.SetValue("", "Edit ZxScript");
-                zxScriptEditRegKey.SetValue("icon", AssemblyUtil.AssemblyPath);
+                zxScriptEditRegKey.SetValue("icon", ExePathUtil.ExePath);
                 using var zxScriptEditCommandRegKey = zxScriptEditRegKey.CreateSubKey("command");
-                zxScriptEditCommandRegKey.SetValue("", $"\"{AssemblyUtil.AssemblyPath}\" e %1");
+                zxScriptEditCommandRegKey.SetValue("", $"\"{ExePathUtil.ExePath}\" e %1");
 
                 Console.WriteLine("Finish Add Menu");
             }

@@ -15,7 +15,7 @@ namespace CSharpZxScript
 
         private static string GetWorkPath()
         {
-            return Path.Combine(AssemblyUtil.AssemblyDir, "work");
+            return Path.Combine(ExePathUtil.AssemblyDir, "work");
         }
 
         private static async Task CreateProject(string filePath, string targetFrameWork, string processXVersion)
