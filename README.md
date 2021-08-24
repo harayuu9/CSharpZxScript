@@ -10,7 +10,6 @@ You can easily write CSharpScript using the Zx function of [ProcessX](https://gi
 ## Table of Contents
 
 - [Getting Started](#getting-started)
-- [ProcessX](#processx)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
