@@ -50,6 +50,98 @@ Since the command operation is difficult, it is recommended to enter the followi
 > cszx arc
 
 You can create the .cs file you want to run and run it from the right-click menu
-![image](https://user-images.githubusercontent.com/24310162/130572747-50e37590-ac34-4ea6-a389-d78af796fb5a.png)
+
+```test.cs
+using System;
+using Zx;
+using static Zx.Env;
+
+await run($"echo {"echo test"}");
+await run($"echo {Environment.CurrentDirectory}");
+
+Environment.Exit(1);
+```
+
 ![image](https://user-images.githubusercontent.com/24310162/130572603-f13cf336-43c4-4e29-93ed-75b132e5718a.png)
 
+```
+"echo test"
+test.cs Directory
+
+ExitCode 1
+Please any key...
+```
+
+How to delete right-click Menu.
+> cszx rrc
+
+
+Edit Script
+---
+
+To edit the script, select "Edit Zx Script" from the right-click menu.
+The default IDE set in .sln will be launched.
+And the code completion for C# works perfectly.
+
+Settings
+===
+
+The settings apply to all scripts under the folder.
+In addition it is possible to set across multiple folders.
+Note that if a package with a different version is found at that time, the version of the child's folder will take precedence.
+The settings are saved as [ZxScriptSettings.json] in each folder
+
+Use NuGet Package
+---
+
+Can use the NuGet package.
+
+Let's put System.Text.Json as an example
+> C:\Scripts>cszx sapa System.Text.Json 5.0.2
+
+edit script.
+> C:\Scripts>cszx e test.cs
+
+```test.cs
+using static Zx.Env;
+
+var strArray = new []{"A", "B", "C", "D", "E"};
+
+await run($"echo {System.Text.Json.JsonSerializer.Serialize(strArray)}");
+```
+You can debug on the IDE.
+
+> C:\Scripts>cszx r test.cs
+
+```
+["A","B","C","D","E"]
+```
+
+How to delete
+> C:\Scripts>cszx srpa System.Text.Json
+
+Use Reference Project
+---
+
+Can reference to csproj.
+This allows you to share your C # library with other projects.
+This means that you can use a Utility created in C # in a script.
+
+You can register with an absolute path, but it is recommended to register with a relative path.
+> C:\Scripts>cszx sapr ../../Project.Core.csproj
+
+How to delete
+> C:\Scripts>cszx srpr ../../Project.Core.csproj
+
+Use Reference CS
+---
+
+Can reference to .cs
+You can easily add a class for your script.
+Similar to reference csproj, but simpler.
+
+You can register with an absolute path, but it is recommended to register with a relative path.
+> C:\Scripts>cszx sapc ScriptCore.cs
+
+How to delete
+> C:\Scripts>cszx srpr ScriptCore.cs
