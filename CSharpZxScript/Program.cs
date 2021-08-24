@@ -18,12 +18,18 @@ namespace CSharpZxScript
         public async Task<int> Run(
             [Option(0, "filename:script.cs")] string filename,
             [Option("fr")] string targetFrameWork = "net5.0",
-            [Option("xv", "https://github.com/Cysharp/ProcessX")] string processXVersion = "1.4.5"
+            [Option("xv", "https://github.com/Cysharp/ProcessX")] string processXVersion = "1.4.5",
+            [Option("sr")] bool stopError = false
         )
         {
             await ScriptRunner.CreateEnv(filename, targetFrameWork, processXVersion);
             var result = await ScriptRunner.Run(filename);
 
+            if (result != 0 && stopError)
+            {
+                Console.WriteLine($"\nExitCode {result}\nPlease any key...");
+                Console.ReadKey();
+            }
             return result;
         }
 

@@ -1,12 +1,9 @@
 ﻿using System;
 using System.IO;
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Cysharp.Diagnostics;
 using Zx;
-
-#nullable enable
 
 namespace CSharpZxScript
 {
@@ -18,10 +15,7 @@ namespace CSharpZxScript
 
         private static string GetWorkPath()
         {
-            Assembly myAssembly = Assembly.GetEntryAssembly() ?? throw new InvalidOperationException("Assembly is not found");
-            return Path.Combine(
-                Path.GetDirectoryName(myAssembly.Location) ?? throw new InvalidOperationException($"Assembly directory is not found ({myAssembly.Location})"),
-                "work");
+            return Path.Combine(AssemblyUtil.AssemblyDir, "work");
         }
 
         private static async Task CreateProject(string filePath, string targetFrameWork, string processXVersion)
@@ -146,7 +140,21 @@ EndProject
 
             if (needBuild)
             {
-                await ProcessX.StartAsync($"dotnet build \"{CsProjPath}\" -c Release -o \"{exePath}\"").ToTask();
+                var builder = new StringBuilder();
+                try
+                {
+                    await foreach (var item in ProcessX.StartAsync($"dotnet build \"{CsProjPath}\" -c Release -o \"{exePath}\""))
+                        builder.AppendLine(item);
+                }
+                catch (ProcessErrorException ex)
+                {
+                    Console.WriteLine(builder);
+                    foreach (var s in ex.ErrorOutput)
+                    {
+                        Console.WriteLine(s);
+                    }
+                    return ex.ExitCode;
+                }
                 await File.WriteAllTextAsync(oldCsPath, newFile);
             }
 
@@ -157,9 +165,12 @@ EndProject
             }
             catch (ProcessErrorException ex)
             {
+                foreach (var s in ex.ErrorOutput)
+                {
+                    Console.WriteLine(s);
+                }
                 return ex.ExitCode;
             }
-
             return 0;
         }
 
