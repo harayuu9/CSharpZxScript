@@ -51,6 +51,13 @@ namespace CSharpZxScript
             await runner.CreateEnv(targetFrameWork, processXVersion);
             runner.Edit();
         }
+
+        [Command(new[] { "ResetCache", "rc" })]
+        public void ResetCache()
+        {
+            ScriptRunner.ResetWork();
+        }
+
         #endregion
 
         #region Settings 

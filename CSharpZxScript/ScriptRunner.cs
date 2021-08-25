@@ -19,6 +19,12 @@ namespace CSharpZxScript
             _filePath = Path.GetFullPath(filePath);
         }
 
+        public static void ResetWork()
+        {
+            var work = Path.Combine(ExePathUtil.AssemblyDir, "work");
+            Directory.Delete(work, true);
+        }
+
         private string GetProjectPath()
         {
             var work = Path.Combine(ExePathUtil.AssemblyDir, "work");
