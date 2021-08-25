@@ -101,6 +101,8 @@ namespace CSharpZxScript
         public bool AddProjectRef(string projectPath)
         {
             projectPath = Path.GetFullPath(projectPath);
+            projectPath = Path.GetRelativePath(projectPath, Environment.CurrentDirectory);
+            
             if (!File.Exists(projectPath))
             {
                 Console.WriteLine($"{projectPath} is not found");
