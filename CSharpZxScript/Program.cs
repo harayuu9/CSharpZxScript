@@ -12,13 +12,7 @@ namespace CSharpZxScript
     {
         private static async Task Main(string[] args)
         {
-            var setting = new Settings();
-            Console.WriteLine(setting.AddProjectRef(@"C:\Users\harada\.dotnet\tools\work\work.csproj"));
-
-            setting.WriteList(Console.Out);
-            //setting.RemovePackageRef("Newtonsoft.Json");
-            //setting.RemovePackageRef("Newtonsoft.Json");
-            //await Host.CreateDefaultBuilder().RunConsoleAppFrameworkAsync<Program>(args);
+            await Host.CreateDefaultBuilder().RunConsoleAppFrameworkAsync<Program>(args);
         }
 
         #region Script
