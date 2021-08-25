@@ -117,10 +117,6 @@ EndProject
 
         public async Task CreateEnv(string targetFrameWork, string processXVersion)
         {
-            if (!File.Exists(_filePath))
-            {
-                await File.WriteAllTextAsync(_filePath, "using Zx;\nusing static Zx.Env;\n\nawait $\"echo {\"Hello World\"}\";");
-            }
             await CreateProject(targetFrameWork, processXVersion);
 
             // Set Current Directory

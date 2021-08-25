@@ -12,7 +12,13 @@ namespace CSharpZxScript
     {
         private static async Task Main(string[] args)
         {
-            await Host.CreateDefaultBuilder().RunConsoleAppFrameworkAsync<Program>(args);
+            var setting = new Settings();
+            Console.WriteLine(setting.AddProjectRef(@"C:\Users\harada\.dotnet\tools\work\work.csproj"));
+
+            setting.WriteList(Console.Out);
+            //setting.RemovePackageRef("Newtonsoft.Json");
+            //setting.RemovePackageRef("Newtonsoft.Json");
+            //await Host.CreateDefaultBuilder().RunConsoleAppFrameworkAsync<Program>(args);
         }
 
         #region Script
@@ -43,6 +49,10 @@ namespace CSharpZxScript
             [Option("xv", "https://github.com/Cysharp/ProcessX")] string processXVersion = "1.4.5"
         )
         {
+            if (!File.Exists(filename))
+            {
+                await File.WriteAllTextAsync(filename, "using Zx;\nusing static Zx.Env;\n\nawait $\"echo {\"Hello World\"}\";");
+            }
             var runner = new ScriptRunner(filename);
             await runner.CreateEnv(targetFrameWork, processXVersion);
             runner.Edit();
@@ -58,22 +68,15 @@ namespace CSharpZxScript
         }
 
         [Command(new[] { "SettingsAddPackage", "sapa" })]
-        public void SettingsAddPackage(
+        public async Task SettingsAddPackage(
             [Option(0, "name:ProcessX")] string name,
-            [Option(1, "Version:1.4.5")] string version,
+            [Option("v", "Version:1.4.5")] string version = "",
             [Option("sd")] string settingDirectory = ".")
         {
-            var settings = Settings.CreateOrLoadCurrentSettings(settingDirectory);
-            var find = settings.PackageRefList.FirstOrDefault(@ref => @ref.Name == name);
-            if (find != null)
-                find.Version = version;
-            else
-                settings.PackageRefList.Add(new Settings.PackageRef
-                {
-                    Name = name,
-                    Version = version
-                });
-            settings.SaveCurrentSettings(settingDirectory);
+            using var cd = new CurrentDirectoryHelper(settingDirectory);
+            var settings = Settings.CreateOrLoadCurrentSettings();
+            await settings.AddPackageRef(name, version);
+            settings.SaveCurrentSettings();
         }
 
         [Command(new[] { "SettingsRemovePackage", "srpa" })]
@@ -81,15 +84,10 @@ namespace CSharpZxScript
             [Option(0, "name:ProcessX")] string name,
             [Option("sd")] string settingDirectory = ".")
         {
-            var settings = Settings.CreateOrLoadCurrentSettings(settingDirectory);
-            var find = settings.PackageRefList.FirstOrDefault(@ref => @ref.Name == name);
-            if (find == null)
-            {
-                Console.Error.WriteLine($"{name} is not found");
-                return;
-            }
-            settings.PackageRefList.Remove(find);
-            settings.SaveCurrentSettings(settingDirectory);
+            using var cd = new CurrentDirectoryHelper(settingDirectory);
+            var settings = Settings.CreateOrLoadCurrentSettings();
+            settings.RemovePackageRef(name);
+            settings.SaveCurrentSettings();
         }
 
         [Command(new[] { "SettingsAddProject", "sapr" })]
@@ -97,21 +95,10 @@ namespace CSharpZxScript
             [Option(0, "projectPath:../../Util/Util.csproj")] string projectPath,
             [Option("sd")] string settingDirectory = ".")
         {
-            var path = Path.GetFullPath(Path.Combine(settingDirectory, projectPath));
-            if (!File.Exists(path))
-            {
-                Console.Error.WriteLine($"{path} is nod found");
-                return;
-            }
-            var settings = Settings.CreateOrLoadCurrentSettings(settingDirectory);
-            var find = settings.ProjectRefList.FirstOrDefault(@ref => @ref.ProjectPath == projectPath);
-            if (find != null) return;
-            
-            settings.ProjectRefList.Add(new Settings.ProjectRef
-            {
-                ProjectPath = projectPath
-            });
-            settings.SaveCurrentSettings(settingDirectory);
+            using var cd = new CurrentDirectoryHelper(settingDirectory);
+            var settings = Settings.CreateOrLoadCurrentSettings();
+            settings.AddProjectRef(projectPath);
+            settings.SaveCurrentSettings();
         }
 
         [Command(new[] { "SettingsRemoveProject", "srpr" })]
@@ -119,15 +106,10 @@ namespace CSharpZxScript
             [Option(0, "projectPath:../../Util/Util.csproj")] string projectPath,
             [Option("sd")] string settingDirectory = ".")
         {
-            var settings = Settings.CreateOrLoadCurrentSettings(settingDirectory);
-            var find = settings.ProjectRefList.FirstOrDefault(@ref => @ref.ProjectPath == projectPath);
-            if (find == null)
-            {
-                Console.Error.WriteLine($"{projectPath} is nod found");
-                return;
-            }
-            settings.ProjectRefList.Remove(find);
-            settings.SaveCurrentSettings(settingDirectory);
+            using var cd = new CurrentDirectoryHelper(settingDirectory);
+            var settings = Settings.CreateOrLoadCurrentSettings();
+            settings.RemoveProjectRef(projectPath);
+            settings.SaveCurrentSettings();
         }
 
         [Command(new[] { "SettingsAddCs", "sac" })]
@@ -135,13 +117,13 @@ namespace CSharpZxScript
             [Option(0, "csFilePath:../../Util/Util.cs")] string csFilePath,
             [Option("sd")] string settingDirectory = ".")
         {
-            var path = Path.GetFullPath(Path.Combine(settingDirectory, csFilePath));
-            if (!File.Exists(path))
+            using var cd = new CurrentDirectoryHelper(settingDirectory);
+            if (!File.Exists(csFilePath))
             {
-                Console.Error.WriteLine($"{path} is nod found");
+                Console.Error.WriteLine($"{csFilePath} is nod found");
                 return;
             }
-            var settings = Settings.CreateOrLoadCurrentSettings(settingDirectory);
+            var settings = Settings.CreateOrLoadCurrentSettings();
             var find = settings.CsRefList.FirstOrDefault(@ref => @ref.FilePath == csFilePath);
             if (find != null) return;
 
@@ -149,7 +131,7 @@ namespace CSharpZxScript
             {
                 FilePath = csFilePath
             });
-            settings.SaveCurrentSettings(settingDirectory);
+            settings.SaveCurrentSettings();
         }
 
         [Command(new[] { "SettingsRemoveCs", "src" })]
@@ -157,7 +139,8 @@ namespace CSharpZxScript
             [Option(0, "csFilePath:../../Util/Util.cs")] string csFilePath,
             [Option("sd")] string settingDirectory = ".")
         {
-            var settings = Settings.CreateOrLoadCurrentSettings(settingDirectory);
+            using var cd = new CurrentDirectoryHelper(settingDirectory);
+            var settings = Settings.CreateOrLoadCurrentSettings();
             var find = settings.CsRefList.FirstOrDefault(@ref => @ref.FilePath == csFilePath);
             if (find == null)
             {
@@ -165,7 +148,7 @@ namespace CSharpZxScript
                 return;
             }
             settings.CsRefList.Remove(find);
-            settings.SaveCurrentSettings(settingDirectory);
+            settings.SaveCurrentSettings();
         }
         #endregion
 
