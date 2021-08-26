@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Cysharp.Diagnostics;
 using Zx;
@@ -136,15 +137,24 @@ EndProject
 
         public async Task<int> Run()
         {
+            var source = new CancellationTokenSource();
+            Console.CancelKeyPress += (_, eventArgs) =>
+            {
+                Console.WriteLine("Ctrl+C");
+                eventArgs.Cancel = true;
+
+                source.Cancel();
+            };
+
             var workPath = GetProjectPath();
             var exePath = Path.Combine(workPath, "bin");
             var oldCsPath = Path.Combine(exePath, "old.cs");
 
             var needBuild = true;
-            var newFile = await File.ReadAllTextAsync(_filePath);
+            var newFile = await File.ReadAllTextAsync(_filePath, source.Token);
             if (File.Exists(oldCsPath))
             {
-                var oldFile = await File.ReadAllTextAsync(oldCsPath);
+                var oldFile = await File.ReadAllTextAsync(oldCsPath, source.Token);
                 if (oldFile == newFile)
                     needBuild = false;
             }
@@ -154,8 +164,11 @@ EndProject
                 var builder = new StringBuilder();
                 try
                 {
-                    await foreach (var item in ProcessX.StartAsync($"dotnet build \"{CsProjPath}\" -c Release -o \"{exePath}\""))
-                        builder.AppendLine(item);
+                    var buildOutput = await ProcessX.StartAsync($"dotnet build \"{CsProjPath}\" -c Release -o \"{exePath}\"").ToTask(source.Token);
+                    foreach (var s in buildOutput)
+                    {
+                        builder.AppendLine(s);
+                    }
                 }
                 catch (ProcessErrorException ex)
                 {
@@ -166,11 +179,11 @@ EndProject
                     }
                     return ex.ExitCode;
                 }
-                await File.WriteAllTextAsync(oldCsPath, newFile);
+                await File.WriteAllTextAsync(oldCsPath, newFile, source.Token);
             }
 
             var p = Process.Start(Path.Combine(exePath, ProjectName));
-            await p.WaitForExitAsync();
+            await p.WaitForExitAsync(source.Token);
             return p.ExitCode;
         }
 
