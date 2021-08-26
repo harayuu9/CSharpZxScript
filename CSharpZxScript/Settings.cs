@@ -296,8 +296,8 @@ namespace CSharpZxScript
 
                 foreach (var projectRef in currentSettings.ProjectRefList)
                 {
-                    var fullPath = Path.Combine(Path.GetDirectoryName(currentSettings.FilePath) ??
-                                                throw new InvalidOperationException(), projectRef.ProjectPath);
+                    var fullPath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(currentSettings.FilePath) ??
+                                                throw new InvalidOperationException(), projectRef.ProjectPath));
 
                     if (result.ProjectRefList.All(@ref => @ref.ProjectPath != fullPath))
                     {
@@ -307,8 +307,8 @@ namespace CSharpZxScript
 
                 foreach (var csRef in currentSettings.CsRefList)
                 {
-                    var fullPath = Path.Combine(Path.GetDirectoryName(currentSettings.FilePath) ??
-                                                throw new InvalidOperationException(), csRef.FilePath);
+                    var fullPath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(currentSettings.FilePath) ??
+                                                throw new InvalidOperationException(), csRef.FilePath));
 
                     if (result.CsRefList.All(@ref => @ref.FilePath != fullPath))
                     {

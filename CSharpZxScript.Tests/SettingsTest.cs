@@ -125,6 +125,7 @@ namespace CSharpZxScript.Tests
             newData = Settings.GetRootSettings("work");
             Assert.NotNull(newData);
             var fixSettings = newData.FixSettings();
+            Assert.True(fixSettings.ProjectRefList.Count == 1);
             Assert.True(fixSettings.PackageRefList.Count == 1);
             Assert.True(fixSettings.PackageRefList.First().Version == "12.0.3");
 
