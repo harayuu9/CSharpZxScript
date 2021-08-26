@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -168,20 +169,9 @@ EndProject
                 await File.WriteAllTextAsync(oldCsPath, newFile);
             }
 
-            try
-            {
-                await foreach (var item in ProcessX.StartAsync($"\"{Path.Combine(exePath, ProjectName)}\""))
-                    Console.WriteLine(item);
-            }
-            catch (ProcessErrorException ex)
-            {
-                foreach (var s in ex.ErrorOutput)
-                {
-                    Console.WriteLine(s);
-                }
-                return ex.ExitCode;
-            }
-            return 0;
+            var p = Process.Start(Path.Combine(exePath, ProjectName));
+            await p.WaitForExitAsync();
+            return p.ExitCode;
         }
 
         public void Edit()
