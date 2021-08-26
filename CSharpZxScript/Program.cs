@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -165,6 +166,29 @@ namespace CSharpZxScript
         #endregion
 
         #region Registry
+        
+        private static bool RunElevated(string fileName, string arguments)
+        {
+            var psi = new ProcessStartInfo
+                {
+                    UseShellExecute = true,
+                    FileName = fileName,
+                    Verb = "runas",
+                    Arguments = arguments
+                };
+
+            try
+            {
+                var p = Process.Start(psi);
+                p?.WaitForExit();
+            }
+            catch (System.ComponentModel.Win32Exception)
+            {
+                return false;
+            }
+
+            return true;
+        }
 
         [Command(new[] { "AddRightClickMenu", "arc" }, "Add Run ZxScript and Edit ZxScript to the right-click menu of .cs")]
         public void AddRightClickMenu()
@@ -184,6 +208,9 @@ namespace CSharpZxScript
                 zxScriptEditRegKey.SetValue("icon", ExePathUtil.ExePath);
                 using var zxScriptEditCommandRegKey = zxScriptEditRegKey.CreateSubKey("command");
                 zxScriptEditCommandRegKey.SetValue("", $"\"{ExePathUtil.ExePath}\" e %1");
+
+                RunElevated("cmd.exe", "/c assoc .cszx=zxscript");
+                RunElevated("cmd.exe", "/c ftype zxscript=" + ExePathUtil.ExePath + " %1");
 
                 Console.WriteLine("Finish Add Menu");
             }
