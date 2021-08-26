@@ -16,6 +16,17 @@ namespace CSharpZxScript
         }
 
         #region Script
+
+        public async Task<int> DefaultRun(
+            [Option(0, "filename:script.cs")] string filename,
+            [Option("fr")] string targetFrameWork = "net5.0",
+            [Option("xv", "https://github.com/Cysharp/ProcessX")] string processXVersion = "1.4.5",
+            [Option("sr")] bool stopError = false
+        )
+        {
+            return await Run(filename, targetFrameWork, processXVersion, stopError);
+        }
+        
         [Command(new[] { "Run", "r" })]
         public async Task<int> Run(
             [Option(0, "filename:script.cs")] string filename,
