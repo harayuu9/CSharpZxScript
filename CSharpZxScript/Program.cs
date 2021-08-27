@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading.Tasks;
 using ConsoleAppFramework;
 using Microsoft.Extensions.Hosting;
@@ -62,6 +63,35 @@ namespace CSharpZxScript
             var runner = new ScriptRunner(filename);
             await runner.CreateEnv(targetFrameWork, processXVersion);
             runner.Edit();
+        }
+
+        [Command(new []{"Inline", "inl"})]
+        public async Task<int> RunInline(
+            [Option(0, "script:log(1234);")] string script,
+            [Option("fr")] string targetFrameWork = "net5.0",
+            [Option("xv", "https://github.com/Cysharp/ProcessX")] string processXVersion = "1.4.5"
+        )
+        {
+            var builder = new StringBuilder();
+            builder.AppendLine(@"
+using System;
+using System.Diagnostics;
+using System.IO;
+using System.Net;
+using Cysharp.Diagnostics;
+using Zx;
+using static Zx.Env;
+");
+            builder.AppendLine(script);
+            await File.WriteAllTextAsync("work.cs", builder.ToString());
+            try
+            {
+                return await Run("work.cs", targetFrameWork, processXVersion);
+            }
+            finally
+            {
+                File.Delete("work.cs");
+            }
         }
 
         [Command(new[] { "ResetCache", "rc" })]
