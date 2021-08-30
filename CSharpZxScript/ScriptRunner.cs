@@ -18,7 +18,25 @@ namespace CSharpZxScript
 
         public ScriptRunner(string filePath)
         {
-            _filePath = Path.GetFullPath(filePath);
+            if (Path.HasExtension(filePath))
+            {
+                _filePath = Path.GetFullPath(filePath);
+            }
+            else
+            {
+                if (File.Exists(filePath + ".cszx"))
+                {
+                    _filePath = Path.GetFullPath(filePath + ".cszx");
+                }
+                else if (File.Exists(filePath + ".cs"))
+                {
+                    _filePath = Path.GetFullPath(filePath + ".cs");
+                }
+                else
+                {
+                    throw new IOException($"File not found. {filePath}");
+                }
+            }
         }
 
         public static void ResetWork()
