@@ -228,19 +228,25 @@ using static Zx.Env;
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                using var shellRegKey = Registry.CurrentUser.CreateSubKey("Software\\Classes\\SystemFileAssociations\\.cs\\shell");
+                void InstallExt(string ext)
+                {
+                    using var shellRegKey = Registry.CurrentUser.CreateSubKey("Software\\Classes\\SystemFileAssociations\\" + ext + "\\shell");
 
-                using var zxScriptRunRegKey = shellRegKey.CreateSubKey("ZxScriptRun");
-                zxScriptRunRegKey.SetValue("", "Run ZxScript");
-                zxScriptRunRegKey.SetValue("icon", ExePathUtil.ExePath);
-                using var zxScriptRunCommandRegKey = zxScriptRunRegKey.CreateSubKey("command");
-                zxScriptRunCommandRegKey.SetValue("", $"\"{ExePathUtil.ExePath}\" r %1 -sr true");
+                    using var zxScriptRunRegKey = shellRegKey.CreateSubKey("ZxScriptRun");
+                    zxScriptRunRegKey.SetValue("", "Run ZxScript");
+                    zxScriptRunRegKey.SetValue("icon", ExePathUtil.ExePath);
+                    using var zxScriptRunCommandRegKey = zxScriptRunRegKey.CreateSubKey("command");
+                    zxScriptRunCommandRegKey.SetValue("", $"\"{ExePathUtil.ExePath}\" r %1 -sr true");
 
-                using var zxScriptEditRegKey = shellRegKey.CreateSubKey("ZxScriptEdit");
-                zxScriptEditRegKey.SetValue("", "Edit ZxScript");
-                zxScriptEditRegKey.SetValue("icon", ExePathUtil.ExePath);
-                using var zxScriptEditCommandRegKey = zxScriptEditRegKey.CreateSubKey("command");
-                zxScriptEditCommandRegKey.SetValue("", $"\"{ExePathUtil.ExePath}\" e %1");
+                    using var zxScriptEditRegKey = shellRegKey.CreateSubKey("ZxScriptEdit");
+                    zxScriptEditRegKey.SetValue("", "Edit ZxScript");
+                    zxScriptEditRegKey.SetValue("icon", ExePathUtil.ExePath);
+                    using var zxScriptEditCommandRegKey = zxScriptEditRegKey.CreateSubKey("command");
+                    zxScriptEditCommandRegKey.SetValue("", $"\"{ExePathUtil.ExePath}\" e %1");
+                }
+
+                InstallExt(".cs");
+                InstallExt(".cszx");
 
                 RunElevated("cmd.exe", "/c assoc .cszx=zxscript");
                 RunElevated("cmd.exe", "/c ftype zxscript=" + ExePathUtil.ExePath + " %1");
@@ -258,18 +264,24 @@ using static Zx.Env;
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                var shellRegKey = Registry.CurrentUser.OpenSubKey("Software\\Classes\\SystemFileAssociations\\.cs\\shell", true);
-                if (shellRegKey == null)
+                void UnInstallExt(string ext)
                 {
-                    Console.WriteLine("Shell Key is not found");
-                    return;
+                    var shellRegKey = Registry.CurrentUser.OpenSubKey("Software\\Classes\\SystemFileAssociations\\" + ext + "\\shell", true);
+                    if (shellRegKey == null)
+                    {
+                        Console.WriteLine("Shell Key is not found");
+                        return;
+                    }
+
+                    using (shellRegKey)
+                    {
+                        shellRegKey.DeleteSubKeyTree("ZxScriptRun");
+                        shellRegKey.DeleteSubKeyTree("ZxScriptEdit");
+                    }
                 }
 
-                using (shellRegKey)
-                {
-                    shellRegKey.DeleteSubKeyTree("ZxScriptRun");
-                    shellRegKey.DeleteSubKeyTree("ZxScriptEdit");
-                }
+                UnInstallExt(".cs");
+                UnInstallExt(".cszx");
 
                 RunElevated("cmd.exe", "/c assoc .cszx=");
                 RunElevated("cmd.exe", "/c ftype zxscript=");
