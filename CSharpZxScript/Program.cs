@@ -59,7 +59,6 @@ namespace CSharpZxScript
             [Option("xv", "https://github.com/Cysharp/ProcessX")] string processXVersion = "1.4.5"
         )
         {
-            if (!File.Exists(filename)) await File.WriteAllTextAsync(filename, "using Zx;\nusing static Zx.Env;\n\nawait $\"echo {\"Hello World\"}\";");
             var runner = new ScriptRunner(filename);
             await runner.CreateEnv(targetFrameWork, processXVersion);
             runner.Edit();
