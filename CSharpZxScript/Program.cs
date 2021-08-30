@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -7,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ConsoleAppFramework;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Win32;
 
 namespace CSharpZxScript
 {
@@ -46,6 +48,7 @@ namespace CSharpZxScript
                 Console.WriteLine($"\nExitCode {result}\nPlease any key...");
                 Console.ReadKey();
             }
+
             return result;
         }
 
@@ -56,16 +59,13 @@ namespace CSharpZxScript
             [Option("xv", "https://github.com/Cysharp/ProcessX")] string processXVersion = "1.4.5"
         )
         {
-            if (!File.Exists(filename))
-            {
-                await File.WriteAllTextAsync(filename, "using Zx;\nusing static Zx.Env;\n\nawait $\"echo {\"Hello World\"}\";");
-            }
+            if (!File.Exists(filename)) await File.WriteAllTextAsync(filename, "using Zx;\nusing static Zx.Env;\n\nawait $\"echo {\"Hello World\"}\";");
             var runner = new ScriptRunner(filename);
             await runner.CreateEnv(targetFrameWork, processXVersion);
             runner.Edit();
         }
 
-        [Command(new []{"Inline", "inl"})]
+        [Command(new[] { "Inline", "inl" })]
         public async Task<int> RunInline(
             [Option(0, "script:log(1234);")] string script,
             [Option("fr")] string targetFrameWork = "net5.0",
@@ -102,7 +102,8 @@ using static Zx.Env;
 
         #endregion
 
-        #region Settings 
+        #region Settings
+
         [Command(new[] { "SettingsList", "sl" })]
         public void SettingsList(
             [Option("sd")] string settingDirectory = ".")
@@ -166,6 +167,7 @@ using static Zx.Env;
                 Console.Error.WriteLine($"{csFilePath} is nod found");
                 return;
             }
+
             var settings = Settings.CreateOrLoadCurrentSettings();
             var find = settings.CsRefList.FirstOrDefault(@ref => @ref.FilePath == csFilePath);
             if (find != null) return;
@@ -190,29 +192,31 @@ using static Zx.Env;
                 Console.Error.WriteLine($"{csFilePath} is nod found");
                 return;
             }
+
             settings.CsRefList.Remove(find);
             settings.SaveCurrentSettings();
         }
+
         #endregion
 
         #region Registry
-        
+
         private static bool RunElevated(string fileName, string arguments)
         {
             var psi = new ProcessStartInfo
-                {
-                    UseShellExecute = true,
-                    FileName = fileName,
-                    Verb = "runas",
-                    Arguments = arguments
-                };
+            {
+                UseShellExecute = true,
+                FileName = fileName,
+                Verb = "runas",
+                Arguments = arguments
+            };
 
             try
             {
                 var p = Process.Start(psi);
                 p?.WaitForExit();
             }
-            catch (System.ComponentModel.Win32Exception)
+            catch (Win32Exception)
             {
                 return false;
             }
@@ -220,12 +224,12 @@ using static Zx.Env;
             return true;
         }
 
-        [Command(new[] { "AddRightClickMenu", "arc" }, "Add Run ZxScript and Edit ZxScript to the right-click menu of .cs")]
-        public void AddRightClickMenu()
+        [Command(new[] { "install" }, "Add Run ZxScript and Edit ZxScript to the right-click menu of .cs")]
+        public void Install()
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                using var shellRegKey = Microsoft.Win32.Registry.CurrentUser.CreateSubKey("Software\\Classes\\SystemFileAssociations\\.cs\\shell");
+                using var shellRegKey = Registry.CurrentUser.CreateSubKey("Software\\Classes\\SystemFileAssociations\\.cs\\shell");
 
                 using var zxScriptRunRegKey = shellRegKey.CreateSubKey("ZxScriptRun");
                 zxScriptRunRegKey.SetValue("", "Run ZxScript");
@@ -242,20 +246,20 @@ using static Zx.Env;
                 RunElevated("cmd.exe", "/c assoc .cszx=zxscript");
                 RunElevated("cmd.exe", "/c ftype zxscript=" + ExePathUtil.ExePath + " %1");
 
-                Console.WriteLine("Finish Add Menu");
+                Console.WriteLine("Finish Install");
             }
             else
             {
-                throw new ArgumentException("AddRightClickMenu is for Windows only");
+                //throw new ArgumentException("install is for Windows only");
             }
         }
 
-        [Command(new[] { "RemoveRightClickMenu", "rrc" }, "Remove right-click menu")]
-        public void RemoveRightClickMenu()
+        [Command(new[] { "uninstall" }, "Remove right-click menu")]
+        public void UnInstall()
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                var shellRegKey = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("Software\\Classes\\SystemFileAssociations\\.cs\\shell", true);
+                var shellRegKey = Registry.CurrentUser.OpenSubKey("Software\\Classes\\SystemFileAssociations\\.cs\\shell", true);
                 if (shellRegKey == null)
                 {
                     Console.WriteLine("Shell Key is not found");
@@ -267,11 +271,15 @@ using static Zx.Env;
                     shellRegKey.DeleteSubKeyTree("ZxScriptRun");
                     shellRegKey.DeleteSubKeyTree("ZxScriptEdit");
                 }
-                Console.WriteLine("Finish Remove Menu");
+
+                RunElevated("cmd.exe", "/c assoc .cszx=");
+                RunElevated("cmd.exe", "/c ftype zxscript=");
+
+                Console.WriteLine("Finish UnInstall");
             }
             else
             {
-                throw new ArgumentException("RemoveRightClickMenu is for Windows only");
+                //throw new ArgumentException("uninstall is for Windows only");
             }
         }
 

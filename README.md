@@ -33,10 +33,12 @@ When the installation is complete, you can see help with the following command
 
 ```
 Usage: CSharpZxScript <Command>
- 
+
 Commands:
   Run, r
   Edit, e
+  Inline, inl
+  ResetCache, rc
   SettingsList, sl
   SettingsAddPackage, sapa
   SettingsRemovePackage, srpa
@@ -44,15 +46,15 @@ Commands:
   SettingsRemoveProject, srpr
   SettingsAddCs, sac
   SettingsRemoveCs, src
-  AddRightClickMenu, arc         Add Run ZxScript and Edit ZxScript to the right-click menu of .cs
-  RemoveRightClickMenu, rrc      Remove right-click menu
+  install                        Add Run ZxScript and Edit ZxScript to the right-click menu of .cs
+  uninstall                      Remove right-click menu
   help                           Display help.
   version                        Display version.
 ```
 
 Since the command operation is difficult, it is recommended to enter the following command and add it to the right-click Menu.
 
-> cszx arc
+> cszx install
 
 You can create the .cs file you want to run and run it from the right-click menu
 
