@@ -24,7 +24,7 @@ namespace CSharpZxScript
         public async Task<int> DefaultRun(
             [Option(0, "filename:script.cs")] string filename,
             [Option("fr")] string targetFrameWork = "net5.0",
-            [Option("xv", "https://github.com/Cysharp/ProcessX")] string processXVersion = "1.4.5",
+            [Option("xv", "https://github.com/Cysharp/ProcessX")] string processXVersion = "1.5.3",
             [Option("sr")] bool stopError = false
         )
         {
@@ -35,7 +35,7 @@ namespace CSharpZxScript
         public async Task<int> Run(
             [Option(0, "filename:script.cs")] string filename,
             [Option("fr")] string targetFrameWork = "net5.0",
-            [Option("xv", "https://github.com/Cysharp/ProcessX")] string processXVersion = "1.4.5",
+            [Option("xv", "https://github.com/Cysharp/ProcessX")] string processXVersion = "1.5.3",
             [Option("sr")] bool stopError = false
         )
         {
@@ -56,7 +56,7 @@ namespace CSharpZxScript
         public async Task Edit(
             [Option(0, "filename:script.cs")] string filename,
             [Option("fr")] string targetFrameWork = "net5.0",
-            [Option("xv", "https://github.com/Cysharp/ProcessX")] string processXVersion = "1.4.5"
+            [Option("xv", "https://github.com/Cysharp/ProcessX")] string processXVersion = "1.5.3"
         )
         {
             var runner = new ScriptRunner(filename);
@@ -68,7 +68,7 @@ namespace CSharpZxScript
         public async Task<int> RunInline(
             [Option(0, "script:log(1234);")] string script,
             [Option("fr")] string targetFrameWork = "net5.0",
-            [Option("xv", "https://github.com/Cysharp/ProcessX")] string processXVersion = "1.4.5"
+            [Option("xv", "https://github.com/Cysharp/ProcessX")] string processXVersion = "1.5.3"
         )
         {
             var builder = new StringBuilder();
@@ -113,7 +113,7 @@ using static Zx.Env;
         [Command(new[] { "SettingsAddPackage", "sapa" })]
         public async Task SettingsAddPackage(
             [Option(0, "name:ProcessX")] string name,
-            [Option("v", "Version:1.4.5")] string version = "",
+            [Option("v", "Version:1.5.3")] string version = "",
             [Option("sd")] string settingDirectory = ".")
         {
             using var cd = new CurrentDirectoryHelper(settingDirectory);
