@@ -159,7 +159,7 @@ EndProject
             await CreateProject(targetFrameWork, processXVersion);
 
             // Set Current Directory
-            var cd = Path.GetDirectoryName(_filePath) ?? throw new InvalidOperationException($"Current directory is null {_filePath}");
+            var cd = Path.GetDirectoryName(_rawFilePath) ?? throw new InvalidOperationException($"Current directory is null {_filePath}");
             Environment.CurrentDirectory = cd;
             // Visual Studio Settings
             await CreateVsLaunchSettings(cd);
