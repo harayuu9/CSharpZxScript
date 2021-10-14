@@ -46,6 +46,7 @@ namespace CSharpZxScript
             {
                 var workPath = GetProjectPath();
                 var exePath = Path.Combine(workPath, "bin");
+                Directory.CreateDirectory(exePath);
                 _filePath = Path.Combine(exePath, Path.GetFileNameWithoutExtension(_rawFilePath) + ".cs");
                 File.Copy(_rawFilePath, _filePath, true);
             }
