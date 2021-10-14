@@ -1,0 +1,9 @@
+using System;
+using System.Diagnostics;
+using System.IO;
+using System.Net;
+using Cysharp.Diagnostics;
+using Zx;
+using static Zx.Env;
+
+log("Hello World", ConsoleColor.Blue);

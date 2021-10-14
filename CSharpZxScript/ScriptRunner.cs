@@ -14,28 +14,40 @@ namespace CSharpZxScript
         private const string ProjectName = "Run";
         private string SlnPath => Path.Combine(GetProjectPath(), ProjectName + ".sln");
         private string CsProjPath => Path.Combine(GetProjectPath(), ProjectName + ".csproj");
+        private readonly string _rawFilePath;
         private readonly string _filePath;
+        private readonly bool _extIsCszx;
 
         public ScriptRunner(string filePath)
         {
             if (Path.HasExtension(filePath))
             {
-                _filePath = Path.GetFullPath(filePath);
+                _rawFilePath = Path.GetFullPath(filePath);
             }
             else
             {
                 if (File.Exists(filePath + ".cszx"))
                 {
-                    _filePath = Path.GetFullPath(filePath + ".cszx");
+                    _rawFilePath = Path.GetFullPath(filePath + ".cszx");
                 }
                 else if (File.Exists(filePath + ".cs"))
                 {
-                    _filePath = Path.GetFullPath(filePath + ".cs");
+                    _rawFilePath = Path.GetFullPath(filePath + ".cs");
                 }
                 else
                 {
                     throw new IOException($"File not found. {filePath}");
                 }
+            }
+
+            _extIsCszx = Path.GetExtension(_rawFilePath) == ".cszx";
+            _filePath = _rawFilePath;
+            if (_extIsCszx)
+            {
+                var workPath = GetProjectPath();
+                var exePath = Path.Combine(workPath, "bin");
+                _filePath = Path.Combine(exePath, Path.GetFileNameWithoutExtension(_rawFilePath) + ".cs");
+                File.Copy(_rawFilePath, _filePath, true);
             }
         }
 
@@ -205,9 +217,25 @@ EndProject
             return p.ExitCode;
         }
 
-        public void Edit()
+        public async Task Edit()
         {
-            Env.run($"{SlnPath}");
+            if (_extIsCszx)
+            {
+                using var watcher = new FileSystemWatcher(Path.GetDirectoryName(_filePath) ?? throw new InvalidOperationException("Could not get the directory from the file path")
+                    );
+                watcher.Changed += (_, args) =>
+                {
+                    File.Copy(_filePath, _rawFilePath, true);
+                    Console.WriteLine($"Changed: {args.FullPath}");
+                };
+
+                watcher.EnableRaisingEvents = true;
+                await Env.run($"{SlnPath}");
+            }
+            else
+            {
+                _ = Env.run($"{SlnPath}");
+            }
         }
     }
 }

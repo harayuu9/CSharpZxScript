@@ -2,6 +2,7 @@
   "profiles": {
     "CSharpZxScript": {
       "commandName": "Project",
+      "commandLineArgs": "e ../Examples/Example2",
       "workingDirectory": "$(ProjectDir)"
     }
   }
