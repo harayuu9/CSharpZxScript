@@ -76,7 +76,7 @@ namespace CSharpZxScript
             var packageRef = new StringBuilder();
             var projectRef = new StringBuilder();
             var csRef = new StringBuilder();
-            var rootSettings = Settings.GetRootSettings(Path.GetDirectoryName(_filePath) ??
+            var rootSettings = Settings.GetRootSettings(Path.GetDirectoryName(_rawFilePath) ??
                                      throw new InvalidOperationException("Could not get the directory from the file path"));
             if (rootSettings != null)
             {
