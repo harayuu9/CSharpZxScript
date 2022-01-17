@@ -7,3 +7,4 @@ using Zx;
 using static Zx.Env;
 
 log("Hello World", ConsoleColor.Blue);
+log(args[0], ConsoleColor.Red);
