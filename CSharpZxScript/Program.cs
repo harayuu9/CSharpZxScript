@@ -61,7 +61,6 @@ namespace CSharpZxScript
         {
             var runner = new ScriptRunner(filename);
             await runner.CreateEnv(targetFrameWork, processXVersion);
-            await runner.Edit();
         }
 
         [Command(new[] { "Inline", "inl" })]

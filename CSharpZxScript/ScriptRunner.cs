@@ -16,7 +16,6 @@ namespace CSharpZxScript
         private string CsProjPath => Path.Combine(GetProjectPath(), ProjectName + ".csproj");
         private readonly string _rawFilePath;
         private readonly string _filePath;
-        private readonly bool _extIsCszx;
 
         public ScriptRunner(string filePath)
         {
@@ -40,16 +39,7 @@ namespace CSharpZxScript
                 }
             }
 
-            _extIsCszx = Path.GetExtension(_rawFilePath) == ".cszx";
             _filePath = _rawFilePath;
-            if (_extIsCszx)
-            {
-                var workPath = GetProjectPath();
-                var exePath = Path.Combine(workPath, "bin");
-                Directory.CreateDirectory(exePath);
-                _filePath = Path.Combine(exePath, Path.GetFileNameWithoutExtension(_rawFilePath) + ".cs");
-                File.Copy(_rawFilePath, _filePath, true);
-            }
         }
 
         public static void ResetWork()
@@ -218,25 +208,9 @@ EndProject
             return p.ExitCode;
         }
 
-        public async Task Edit()
+        public void Edit()
         {
-            if (_extIsCszx)
-            {
-                using var watcher = new FileSystemWatcher(Path.GetDirectoryName(_filePath) ?? throw new InvalidOperationException("Could not get the directory from the file path")
-                    );
-                watcher.Changed += (_, args) =>
-                {
-                    File.Copy(_filePath, _rawFilePath, true);
-                    Console.WriteLine($"Changed: {args.FullPath}");
-                };
-
-                watcher.EnableRaisingEvents = true;
-                await Env.run($"{SlnPath}");
-            }
-            else
-            {
-                _ = Env.run($"{SlnPath}");
-            }
+            _ = Env.run($"{SlnPath}");
         }
     }
 }
