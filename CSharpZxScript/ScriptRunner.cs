@@ -156,7 +156,7 @@ EndProject
             // TODO Support Other IDE
         }
 
-        public async Task<int> Run()
+        public async Task<int> Run(string[]? args)
         {
             var source = new CancellationTokenSource();
             Console.CancelKeyPress += (_, eventArgs) =>
@@ -203,7 +203,7 @@ EndProject
                 await File.WriteAllTextAsync(oldCsPath, newFile, source.Token);
             }
 
-            var p = Process.Start(Path.Combine(exePath, ProjectName));
+            var p = Process.Start(Path.Combine(exePath, ProjectName), args ?? ArraySegment<string>.Empty);
             await p.WaitForExitAsync(source.Token);
             return p.ExitCode;
         }
