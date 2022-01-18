@@ -69,6 +69,7 @@ namespace CSharpZxScript
 		{
 			var runner = new ScriptRunner(filename);
 			await runner.CreateEnv(targetFrameWork, processXVersion);
+			runner.Edit();
 		}
 
 		[Command(new[]
