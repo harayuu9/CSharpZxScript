@@ -293,7 +293,7 @@ using static Zx.Env;
 			}
 			else
 			{
-				//throw new ArgumentException("install is for Windows only");
+				throw new ArgumentException("install is for Windows only");
 			}
 		}
 
@@ -331,7 +331,7 @@ using static Zx.Env;
 			}
 			else
 			{
-				//throw new ArgumentException("uninstall is for Windows only");
+				throw new ArgumentException("uninstall is for Windows only");
 			}
 		}
 

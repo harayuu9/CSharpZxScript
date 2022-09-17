@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,6 +13,8 @@ namespace CSharpZxScript
     public class ScriptRunner
     {
         private const string ProjectName = "Run";
+        private const string LoadPackageStart = "//load package ";
+
         private string SlnPath => Path.Combine(GetProjectPath(), ProjectName + ".sln");
         private string CsProjPath => Path.Combine(GetProjectPath(), ProjectName + ".csproj");
         private readonly string _rawFilePath;
@@ -124,6 +127,34 @@ EndProject
 </Project>
 ";
             await File.WriteAllTextAsync(CsProjPath, csproj);
+
+
+            var csFile = await File.ReadAllLinesAsync(_rawFilePath);
+            var defaultCd = Environment.CurrentDirectory;
+            try
+            {
+                Environment.CurrentDirectory = workPath;
+
+                // load package format at [//load package "ProcessX"]
+                foreach (var line in csFile)
+                {
+                    if (!line.StartsWith(LoadPackageStart))
+                        continue;
+                    try
+                    {
+                        var substring = line.Substring(LoadPackageStart.Length + 1);
+                        await $"dotnet add package {substring.Split(' ').First()}";
+                    }
+                    catch
+                    {
+                        // ignored
+                    }
+                }
+            }
+            finally
+            {
+                Environment.CurrentDirectory = defaultCd;
+            }
         }
 
         private async Task CreateVsLaunchSettings(string currentDir)
