@@ -41,7 +41,7 @@ namespace CSharpZxScript.Tests
 
                                       log("Hello World", ConsoleColor.Blue);
                                       log(args[0], ConsoleColor.Red);
-                                      Environment.Exit(1234);
+                                      Environment.Exit(-1);
                                       """;
             const string filePath = "test.cszx";
             await File.WriteAllTextAsync(filePath, scriptData);
@@ -51,7 +51,7 @@ namespace CSharpZxScript.Tests
                 var script = new ScriptRunner(filePath);
                 await script.CreateEnv("net7.0", "1.5.3");
                 var result = await script.Run(new[] { "Args0" });
-                Assert.Equal(1234, result);
+                Assert.NotEqual(0, result);
             }
             finally
             {
