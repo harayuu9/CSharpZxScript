@@ -47,13 +47,13 @@ namespace CSharpZxScript
 
         public static void ResetWork()
         {
-            var work = Path.Combine(ExePathUtil.AssemblyDir, "work");
+            var work = Path.Combine(Path.GetTempPath(), "work");
             Directory.Delete(work, true);
         }
 
         private string GetProjectPath()
         {
-            var work = Path.Combine(ExePathUtil.AssemblyDir, "work");
+            var work = Path.Combine(Path.GetTempPath(), "work");
             Directory.CreateDirectory(work);
             var project = Path.Combine(work, Path.GetFileNameWithoutExtension(_filePath));
             Directory.CreateDirectory(project);
@@ -78,20 +78,18 @@ namespace CSharpZxScript
 
                 foreach (var @ref in setting.PackageRefList)
                 {
-                    packageRef.AppendFormat("    <PackageReference Include=\"{0}\" Version=\"{1}\" />\n", @ref.Name, @ref.Version);
+                    packageRef.Append($"    <PackageReference Include=\"{@ref.Name}\" Version=\"{@ref.Version}\" />\n");
                 }
 
                 foreach (var @ref in setting.ProjectRefList)
                 {
-                    slnProjectRef.AppendFormat("Project(\"{0:B}\") = \"{1}\", \"{2}\", \"{3:B}\"\nEndProject\n",
-                        Guid.NewGuid(), Path.GetFileNameWithoutExtension(@ref.ProjectPath),
-                        @ref.ProjectPath, Guid.NewGuid());
-                    projectRef.AppendFormat("    <ProjectReference Include=\"{0}\"/>\n", @ref.ProjectPath);
+                    slnProjectRef.Append($"Project(\"{Guid.NewGuid():B}\") = \"{Path.GetFileNameWithoutExtension(@ref.ProjectPath)}\", \"{@ref.ProjectPath}\", \"{Guid.NewGuid():B}\"\nEndProject\n");
+                    projectRef.Append($"    <ProjectReference Include=\"{@ref.ProjectPath}\"/>\n");
                 }
 
                 foreach (var @ref in setting.CsRefList)
                 {
-                    csRef.AppendFormat("    <Compile Include=\"{0}\"/>", @ref.FilePath);
+                    csRef.Append($"    <Compile Include=\"{@ref.FilePath}\"/>");
                 }
             }
 
