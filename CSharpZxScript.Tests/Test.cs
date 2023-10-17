@@ -41,7 +41,7 @@ namespace CSharpZxScript.Tests
 
                                       log("Hello World", ConsoleColor.Blue);
                                       log(args[0], ConsoleColor.Red);
-                                      return 1234;
+                                      Environment.Exit(1234);
                                       """;
             const string filePath = "test.cszx";
             await File.WriteAllTextAsync(filePath, scriptData);
