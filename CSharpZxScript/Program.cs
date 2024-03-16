@@ -13,7 +13,7 @@ namespace CSharpZxScript
 {
     internal class Program : ConsoleAppBase
     {
-        private const string DefaultDotnetVersion = "net7.0";
+        private const string DefaultDotnetVersion = "net8.0";
         private const string DefaultProcessXVersion = "1.5.5";
 
         private static async Task Main(string[] args)

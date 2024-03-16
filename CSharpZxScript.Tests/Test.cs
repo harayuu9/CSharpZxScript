@@ -22,7 +22,7 @@ namespace CSharpZxScript.Tests
             try
             {
                 var script = new ScriptRunner(filePath);
-                await script.CreateEnv("net7.0", "1.5.3");
+                await script.CreateEnv("net8.0", "1.5.3");
                 var result = await script.Run(new[] { "Args0" });
                 Assert.Equal(0, result);
             }
@@ -49,9 +49,10 @@ namespace CSharpZxScript.Tests
             try
             {
                 var script = new ScriptRunner(filePath);
-                await script.CreateEnv("net7.0", "1.5.3");
+                await script.CreateEnv("net8.0", "1.5.3");
                 var result = await script.Run(new[] { "Args0" });
                 Assert.NotEqual(0, result);
+                Assert.Equal(-1, result);
             }
             finally
             {
