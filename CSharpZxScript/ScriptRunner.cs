@@ -233,7 +233,13 @@ EndProject
                 await File.WriteAllTextAsync(oldCsPath, newFile, source.Token);
             }
 
-            var p = Process.Start(Path.Combine(exePath, ProjectName), args);
+            var startInfo = new ProcessStartInfo
+            {
+                FileName = Path.Combine(exePath, ProjectName),
+                Arguments = args,
+            };
+
+            var p = Process.Start(startInfo)!;
             await p.WaitForExitAsync(source.Token);
             return p.ExitCode;
         }

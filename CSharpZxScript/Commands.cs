@@ -51,13 +51,13 @@ namespace CSharpZxScript
         }
 
         /// <summary>
-        /// 
+        /// Edit
         /// </summary>
         /// <param name="filename"></param>
         /// <param name="targetFrameWork">-fr</param>
         /// <param name="processXVersion">-xv</param>
         /// <returns></returns>
-        [Command("Edit,e")]
+        [Command("e")]
         public async Task Edit(
             [Argument] string filename,
             string targetFrameWork = DefaultDotnetVersion,
@@ -69,7 +69,10 @@ namespace CSharpZxScript
             runner.Edit();
         }
 
-        [Command("ResetCache,rc")]
+        /// <summary>
+        /// ResetCache
+        /// </summary>
+        [Command("rc")]
         public void ResetCache()
         {
             ScriptRunner.ResetWork();
@@ -80,10 +83,10 @@ namespace CSharpZxScript
         #region Settings
         
         /// <summary>
-        /// 
+        /// SettingList
         /// </summary>
         /// <param name="settingDirectory">-sd</param>
-        [Command("SettingList,sl")]
+        [Command("sl")]
         public void SettingsList(
             string settingDirectory = ".")
         {
@@ -91,13 +94,13 @@ namespace CSharpZxScript
         }
 
         /// <summary>
-        /// 
+        /// SettingsAddPackage
         /// </summary>
         /// <param name="name">name:ProcessX</param>
         /// <param name="version">-v</param>
         /// <param name="settingDirectory">-sd</param>
         /// <returns></returns>
-        [Command("SettingsAddPackage,sapa")]
+        [Command("sapa")]
         public async Task SettingsAddPackage(
             [Argument] string name,
             string version = "",
@@ -110,11 +113,11 @@ namespace CSharpZxScript
         }
 
         /// <summary>
-        /// Removes a package reference from the current settings.
+        /// SettingsRemovePackage. Removes a package reference from the current settings.
         /// </summary>
         /// <param name="name">-name, The name of the package to remove.</param>
         /// <param name="settingDirectory">-sd, The directory where the settings file is located. Defaults to the current directory.</param>
-        [Command("SettingsRemovePackage,srpa")]
+        [Command("srpa")]
         public Task SettingsRemovePackage(
             [Argument] string name,
             string settingDirectory = ".")
@@ -127,11 +130,11 @@ namespace CSharpZxScript
         }
 
         /// <summary>
-        /// Adds a project reference to the current settings.
+        /// SettingsAddProject. Adds a project reference to the current settings.
         /// </summary>
         /// <param name="projectPath">-projectPath, The path to the project file (.csproj) to add.</param>
         /// <param name="settingDirectory">-sd, The directory where the settings file is located. Defaults to the current directory.</param>
-        [Command("SettingsAddProject,sapr")]
+        [Command("sapr")]
         public Task SettingsAddProject(
             [Argument] string projectPath,
             string settingDirectory = ".")
@@ -144,11 +147,11 @@ namespace CSharpZxScript
         }
 
         /// <summary>
-        /// Removes a project reference from the current settings.
+        /// SettingsRemoveProject. Removes a project reference from the current settings.
         /// </summary>
         /// <param name="projectPath">-projectPath, The path to the project file (.csproj) to remove.</param>
         /// <param name="settingDirectory">-sd, The directory where the settings file is located. Defaults to the current directory.</param>
-        [Command("SettingsRemoveProject,srpr")]
+        [Command("srpr")]
         public Task SettingsRemoveProject(
             [Argument] string projectPath,
             string settingDirectory = ".")
@@ -161,11 +164,11 @@ namespace CSharpZxScript
         }
 
         /// <summary>
-        /// Adds a C# file reference to the current settings.
+        /// SettingsAddCs. Adds a C# file reference to the current settings.
         /// </summary>
         /// <param name="csFilePath">-csFilePath, The path to the C# file (.cs) to add.</param>
         /// <param name="settingDirectory">-sd, The directory where the settings file is located. Defaults to the current directory.</param>
-        [Command("SettingsAddCs,sac")]
+        [Command("sac")]
         public Task SettingsAddCs(
             [Argument] string csFilePath,
             string settingDirectory = ".")
@@ -190,11 +193,11 @@ namespace CSharpZxScript
         }
 
         /// <summary>
-        /// Removes a C# file reference from the current settings.
+        /// SettingsRemoveCs. Removes a C# file reference from the current settings.
         /// </summary>
         /// <param name="csFilePath">-csFilePath, The path to the C# file (.cs) to remove.</param>
         /// <param name="settingDirectory">-sd, The directory where the settings file is located. Defaults to the current directory.</param>
-        [Command("SettingsRemoveCs,src")]
+        [Command("src")]
         public Task SettingsRemoveCs(
             [Argument] string csFilePath,
             string settingDirectory = ".")
