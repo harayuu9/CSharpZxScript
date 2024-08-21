@@ -185,7 +185,7 @@ EndProject
             // TODO Support Other IDE
         }
 
-        public async Task<int> Run(string[]? args)
+        public async Task<int> Run(string? args = null)
         {
             var source = new CancellationTokenSource();
             Console.CancelKeyPress += (_, eventArgs) =>
@@ -214,8 +214,9 @@ EndProject
                 var builder = new StringBuilder();
                 try
                 {
-                    var buildOutput = await ProcessX.StartAsync($"dotnet build \"{CsProjPath}\" -c Release -o \"{exePath}\"").ToTask(source.Token);
-                    foreach (var s in buildOutput)
+                    await foreach (var s in ProcessX
+                                       .StartAsync($"dotnet build \"{CsProjPath}\" -c Release -o \"{exePath}\"")
+                                       .WithCancellation(source.Token))
                     {
                         builder.AppendLine(s);
                     }
@@ -232,7 +233,7 @@ EndProject
                 await File.WriteAllTextAsync(oldCsPath, newFile, source.Token);
             }
 
-            var p = Process.Start(Path.Combine(exePath, ProjectName), args ?? ArraySegment<string>.Empty);
+            var p = Process.Start(Path.Combine(exePath, ProjectName), args);
             await p.WaitForExitAsync(source.Token);
             return p.ExitCode;
         }
